@@ -9,7 +9,7 @@
   "scripts": {
     "prepare": "lefthook install",
     "lint": "eslint .",
-    "typecheck": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json && tsc -p packages/react-kit/tsconfig.json",
     "test": "pnpm -r --if-present test",
     "build": "pnpm -r --if-present build",
     "format": "prettier --write .",
