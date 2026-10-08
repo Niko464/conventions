@@ -1,0 +1,48 @@
+name: Release
+on:
+  push:
+    branches: [master]
+    paths: [packages/**]
+  workflow_dispatch:
+concurrency:
+  group: release
+  cancel-in-progress: false
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  publish:
+    name: Publish new package versions
+    # npm trusted publishing doesn't support self-hosted runners yet.
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - run: npm install -g npm@latest
+      - if: hashFiles('pnpm-workspace.yaml') != ''
+        uses: pnpm/action-setup@v6
+      - if: hashFiles('pnpm-workspace.yaml') != ''
+        run: pnpm install --frozen-lockfile && pnpm -r --if-present build
+      - name: Publish every package version not on npm yet
+        run: |
+          mkdir -p "$RUNNER_TEMP/tarballs"
+          for dir in packages/*/; do
+            name=$(node -p "require('./${dir}package.json').name")
+            version=$(node -p "require('./${dir}package.json').version")
+            if npm view "$name@$version" version >/dev/null 2>&1; then
+              echo "$name@$version is already on npm"
+              continue
+            fi
+            out="$RUNNER_TEMP/tarballs/${name#@niko464/}"
+            mkdir -p "$out"
+            if [ -f pnpm-workspace.yaml ]; then
+              (cd "$dir" && pnpm pack --pack-destination "$out")
+            else
+              (cd "$dir" && npm pack --pack-destination "$out")
+            fi
+            npm publish "$out"/*.tgz --access public
+          done

@@ -1,0 +1,7 @@
+{
+  "name": "@niko464/eslint-config",
+  "version": "0.0.1",
+  "description": "Placeholder until v0.1: see https://github.com/Niko464/conventions/issues/2",
+  "repository": { "type": "git", "url": "git+https://github.com/Niko464/conventions.git", "directory": "packages/eslint-config" },
+  "license": "MIT"
+}
