@@ -9,4 +9,5 @@ export default defineConfig(
   tseslint.configs.recommended,
   base,
   react,
+  { files: ['packages/react-kit/src/**'], rules: { '@niko464/no-effect-hooks': 'off' } },
 );
