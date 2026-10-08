@@ -37,3 +37,11 @@ The one description of the stack for Niko464's TypeScript projects. Decided in [
 - Pre-commit hooks run the same lint as CI.
 - Tests with Vitest and Testing Library.
 - CI on pull requests only, on the project's VPS runner.
+
+## Fleet sandboxes
+
+Every ticket's sandbox runs the project's tests against a real Postgres, with its own database, as saas_wedding_venues does:
+
+- `.sandcastle/project.yaml` starts the compose Postgres with `services:` (e.g. `docker compose up --detach --wait postgres`), and sets `TEST_DATABASE_URL` in `env:` to `postgresql://…@host.docker.internal:5432/<name>_test_{{ISSUE}}`, so parallel sandboxes never share a database.
+- The compose Postgres listens beyond `127.0.0.1`, so sandboxes reach it through `host.docker.internal`.
+- The test setup uses `TEST_DATABASE_URL` when it is set, creating and migrating that database, instead of starting its own container.
