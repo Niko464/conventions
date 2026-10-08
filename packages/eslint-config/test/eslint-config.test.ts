@@ -130,6 +130,12 @@ describe('react: @niko464/no-effect-hooks', () => {
       'an aliased hook destructured off the default import',
       "import R from 'react';\nconst { useLayoutEffect: useLayout } = R;\nexport const f = () => useLayout(() => undefined, []);\n",
     ],
+    [
+      'a member of default imported by name',
+      "import { default as R } from 'react';\nexport const f = () => R.useEffect(() => undefined, []);\n",
+    ],
+    ['a re-export', "export { useEffect } from 'react';\n"],
+    ['an aliased re-export', "export { useLayoutEffect as useLayout } from 'react';\n"],
   ])('reports %s', async (_, code) => {
     expect(await ruleIds(code)).toEqual(['@niko464/no-effect-hooks']);
   });

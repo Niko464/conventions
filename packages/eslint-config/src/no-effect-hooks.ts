@@ -1,5 +1,5 @@
 import type { Rule, Scope } from 'eslint';
-import type { MemberExpression, Node, Property } from 'estree';
+import type { Node } from 'estree';
 
 const EFFECT_HOOKS = new Set(['useEffect', 'useLayoutEffect', 'useInsertionEffect']);
 
@@ -8,10 +8,6 @@ const keyName = (key: Node, computed: boolean) => {
   if (key.type === 'Identifier' && !computed) return key.name;
   return null;
 };
-
-const memberName = (member: MemberExpression) => keyName(member.property, member.computed);
-
-const propertyName = (property: Property) => keyName(property.key, property.computed);
 
 export const noEffectHooks: Rule.RuleModule = {
   meta: {
@@ -33,7 +29,7 @@ export const noEffectHooks: Rule.RuleModule = {
       const identifier = reference.identifier;
       const parent: Node | null = (identifier as Rule.Node).parent;
       if (parent?.type === 'MemberExpression' && parent.object === identifier) {
-        reportIfEffect(parent, memberName(parent));
+        reportIfEffect(parent, keyName(parent.property, parent.computed));
       }
       if (
         parent?.type === 'VariableDeclarator' &&
@@ -41,7 +37,9 @@ export const noEffectHooks: Rule.RuleModule = {
         parent.id.type === 'ObjectPattern'
       ) {
         for (const property of parent.id.properties) {
-          if (property.type === 'Property') reportIfEffect(property, propertyName(property));
+          if (property.type === 'Property') {
+            reportIfEffect(property, keyName(property.key, property.computed));
+          }
         }
       }
     };
@@ -50,13 +48,21 @@ export const noEffectHooks: Rule.RuleModule = {
       ImportDeclaration(node) {
         if (node.source.value !== 'react') return;
         for (const specifier of node.specifiers) {
-          if (specifier.type === 'ImportSpecifier') {
-            reportIfEffect(specifier, keyName(specifier.imported, false));
+          const imported =
+            specifier.type === 'ImportSpecifier' ? keyName(specifier.imported, false) : 'default';
+          if (imported !== 'default') {
+            reportIfEffect(specifier, imported);
             continue;
           }
           for (const variable of context.sourceCode.getDeclaredVariables(specifier)) {
             variable.references.forEach(reportNamespaceUse);
           }
+        }
+      },
+      ExportNamedDeclaration(node) {
+        if (node.source?.value !== 'react') return;
+        for (const specifier of node.specifiers) {
+          reportIfEffect(specifier, keyName(specifier.local, false));
         }
       },
     };
