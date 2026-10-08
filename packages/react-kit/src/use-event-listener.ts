@@ -35,7 +35,7 @@ export function useEventListener(
   } = typeof options === 'boolean' ? { capture: options } : (options ?? {});
 
   useEffect(() => {
-    const element = 'current' in target ? target.current : target;
+    const element = 'addEventListener' in target ? target : target.current;
     if (element === null) return;
     const listener = (event: Event) => onEvent(event);
     const listenerOptions: AddEventListenerOptions = { capture, once };

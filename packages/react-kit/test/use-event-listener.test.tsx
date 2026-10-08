@@ -50,6 +50,26 @@ describe('useEventListener on window', () => {
 });
 
 describe('useEventListener on document', () => {
+  it('listens on window and document even when an element is named current', () => {
+    const onKey = vi.fn();
+    const onClick = vi.fn();
+    const named = document.createElement('form');
+    named.id = 'current';
+    named.setAttribute('name', 'current');
+    document.body.append(named);
+    render(
+      <>
+        <WindowKeys onKey={onKey} />
+        <DocumentClicks onClick={onClick} />
+      </>,
+    );
+    fireEvent.keyDown(window, { key: 'Escape' });
+    fireEvent.click(document, { button: 1 });
+    named.remove();
+    expect(onKey).toHaveBeenCalledWith('Escape');
+    expect(onClick).toHaveBeenCalledWith(1);
+  });
+
   it('fires, and stops after unmount', () => {
     const onClick = vi.fn();
     const { unmount } = render(<DocumentClicks onClick={onClick} />);

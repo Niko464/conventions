@@ -12,7 +12,7 @@ React 19.2 or later is required: the hooks use `useEffectEvent`.
 
 ## `useMountEffect(fn)`
 
-`fn` runs once after mount. The cleanup it returns runs on unmount.
+`fn` runs once after mount. The cleanup it returns runs on unmount. In development, `<StrictMode>` mounts each component twice, so `fn` and its cleanup run one extra time there.
 
 ```tsx
 import { useMountEffect } from '@niko464/react-kit';
