@@ -4,3 +4,5 @@ node_modules/
 !.env.example
 .sandcastle/logs/
 .sandcastle/worktrees/
+dist/
+.pnpm-store/

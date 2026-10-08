@@ -1,7 +1,40 @@
 {
   "name": "@niko464/eslint-config",
-  "version": "0.0.1",
-  "description": "Placeholder until v0.1: see https://github.com/Niko464/conventions/issues/2",
-  "repository": { "type": "git", "url": "git+https://github.com/Niko464/conventions.git", "directory": "packages/eslint-config" },
-  "license": "MIT"
+  "version": "0.1.0",
+  "description": "Shared ESLint flat-config blocks: a comment ban, an effect-hook ban and @shadcn/lint",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Niko464/conventions.git",
+    "directory": "packages/eslint-config"
+  },
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=20.19"
+  },
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.build.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@shadcn/lint": "0.2.0"
+  },
+  "peerDependencies": {
+    "@typescript-eslint/parser": ">=8.40.0",
+    "eslint": "^9.30.0 || ^10.0.0"
+  },
+  "devDependencies": {
+    "@types/estree": "1.0.9",
+    "@typescript-eslint/parser": "8.71.1",
+    "eslint": "10.12.0"
+  }
 }
