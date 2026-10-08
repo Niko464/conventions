@@ -1,0 +1,4 @@
+.github/
+.sandcastle/
+pnpm-lock.yaml
+dist/
