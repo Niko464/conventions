@@ -19,6 +19,10 @@ The one description of the stack for Niko464's TypeScript projects. Decided in [
 - Each endpoint is written once, as an [oRPC](https://orpc.unnoq.com) contract with Zod schemas in `packages/schemas`.
 - Nest implements the contract (`@orpc/nest`); the compiler fails when a handler returns the wrong shape.
 - The web calls through the same contract, fully typed, with TanStack Query options from `@orpc/tanstack-query`. No hand-written fetch types, no generated client.
+- Every error, from a contract route or anywhere else in the API (router 404, body parser, throttler), answers as RFC 9457 `application/problem+json`: `{ type, title, status, detail, instance, code, requestId, errors? }`, with `code` from the project's append-only `ERROR_CODES` registry. Never oRPC's own `{ defined, code, status, message, data }` envelope, so an API has one error shape whichever client calls it.
+  - Contract routes rethrow their errors out of `@orpc/nest`, so one Nest exception filter shapes every error body. A failed input check becomes `VALIDATION_FAILED`, with one `errors` entry per Zod issue.
+  - The web's oRPC link decodes problem+json, and clients branch on `code`, never on `message`.
+  - Reference: baabda_town's [ADR 0001](https://github.com/Niko464/baabda_town/blob/main/docs/adr/0001-orpc-routes-answer-problem-details.md) and its `apps/api/src/common/orpc/problem-details-bridge.ts`.
 
 ## Frontend
 
