@@ -16,9 +16,8 @@ CONTEXT.md, when the repo has one, is the settled design: read it first and don'
 1. **Read the ticket**: `gh issue view {{ISSUE}} --comments`. If it is a child of a wayfinder map (a `wayfinder:map` parent issue), call the Skill tool with `mattpocock-skills:wayfinder` and follow the map's Notes, except for delivery, which follows this prompt: don't edit the map body or close the ticket, since other agents work the same map in parallel.
 2. **Build** exactly what the ticket asks, with the skills it or its map names (`tdd`, `domain-modeling`, `codebase-design`, …). Commit on `{{BRANCH}}`. When the pre-commit hook fails, fix what it reports and commit again, never `--no-verify`.
 3. **Verify like CI**: `{{VERIFY}}`. Fix every failure.
-4. **Review before shipping**: call the Skill tool with `mattpocock-skills:code-review`, reviewing since `origin/{{DEFAULT_BRANCH}}` against ticket #{{ISSUE}}. Fix what it finds, re-verify, commit.
-5. **Catch up**: `git fetch origin {{DEFAULT_BRANCH}} && git rebase origin/{{DEFAULT_BRANCH}}`. Resolve conflicts (Skill tool: `mattpocock-skills:resolving-merge-conflicts`), and if anything changed, verify like CI again.
-6. **Open the PR**: `git push --force-with-lease -u origin {{BRANCH}}`, then `gh pr create --base {{DEFAULT_BRANCH}}` with the ticket title and this body:
+4. **Catch up**: `git fetch origin {{DEFAULT_BRANCH}} && git rebase origin/{{DEFAULT_BRANCH}}`. Resolve conflicts (Skill tool: `mattpocock-skills:resolving-merge-conflicts`), and if anything changed, verify like CI again.
+5. **Open the PR**: `git push --force-with-lease -u origin {{BRANCH}}`, then `gh pr create --base {{DEFAULT_BRANCH}}` with the ticket title and this body:
 
    ```markdown
    <summary of what changed>
@@ -33,8 +32,8 @@ CONTEXT.md, when the repo has one, is the settled design: read it first and don'
 
    Keep the `map-pointer` lines only when the ticket belongs to a wayfinder map: they are the context pointer for the map once a human merges.
 
-7. **Wait for CI**: `gh pr checks --watch --interval 30`. On red, read `gh run view <id> --log-failed`, fix, push, wait again, at most 2 attempts.
-8. **Stop.** Don't label the PR (the engine labels it `fleet:review` once it sees green CI), don't comment on the ticket, and never run `gh pr merge` or push to `{{DEFAULT_BRANCH}}`.
+6. **Wait for CI**: `gh pr checks --watch --interval 30`. On red, read `gh run view <id> --log-failed`, fix, push, wait again, at most 2 attempts.
+7. **Stop.** Don't label the PR (the engine labels it `fleet:review` once it sees green CI), don't comment on the ticket, and never run `gh pr merge` or push to `{{DEFAULT_BRANCH}}`.
 
 ## When you can't finish
 
